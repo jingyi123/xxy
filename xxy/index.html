@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		input{
+			width: 300px;
+			height: 50px;
+			font-size: 35px;
+			margin-left: 30px;
+			
+		}
+		.box{
+			width: 800px;
+			margin: 0 auto;
+		}
+		.box1{
+			margin-top: 30px;
+			border-radius: 10px;
+			border:2px #ccc solid ;
+			width: 100%;
+			display: flex;
+			flex-wrap: wrap;
+		}
+		.div1{
+			width: 180px;
+			height: 100px;
+			text-align: center;
+			margin-left: 10px;
+		}
+		p{
+			height: 30px;
+			border: solid 1px;
+		}
+		span{
+		
+			width: 150px;
+		}
+		.p1{
+			background: red;
+			color: white;
+		}
+	</style>
+	<body>
+		<div class="box">
+			<input type="text" name="" id="txt" value=""placeholder="请输入你的心愿" />
+			<button onclick="adp()">提交</button>
+			<div class="box1">
+				
+			</div>
+		</div>
+	</body>
+	<script src="modules/ajax_v3.js" type="text/javascript" charset="utf-8"></script>
+	<script src="modules/jquery-3.3.1.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		let url1 = "http://localhost:8080"
+		function adp () {
+			ajax.post(url1+"/add",{content:$("#txt").val()}).then(res=>{
+				console.log(res)
+				getMy()
+			})
+		}
+		getMy()
+		function getMy() {
+			ajax.post(url1+"/init").then(res=>{
+				let data = JSON.parse(res)
+				 randSort (data)
+				let str =``
+				for (var i = 0; i < data.length; i++) {
+					let left = parseInt(Math.random()*(520-1)+1)
+					let top = parseInt(Math.random()*(700-1)+1)
+					console.log(left)
+					str+= `<div class = "div1">
+					<p><a href="###" onclick="del('${data[i]._id}')">删除</a></p>
+					<p>${data[i].content}</p>
+					`
+					if (data[i].color==-1) {
+						str+=`<p class="p1" onclick="aoo('${data[i]._id}')" >√</p>`
+					} else{
+						str+=`<p onclick="aoo('${data[i]._id}')" >√</p>`
+					}
+					//$(".div1").css({left:left+"px",top:top+"px"})
+					str +=`</div>`
+				}
+				$(".box1").html(str)
+			})
+		}
+		//变色
+		function aoo (id) {
+			ajax.get(url1+"/color",{id}).then(res=>{
+				console.log(res)
+				getMy()
+			})
+		}
+		
+		//删除
+		function  del(id) {
+			ajax.get(url1+"/del",{id}).then(res=>{
+				console.log(res)
+				getMy()
+			})
+		}
+		
+		//随机排序
+		function randSort (arr) {
+			let temp;
+			for (var i = 0; i < arr.length; i++) {
+				var a = parseInt(Math.random()*arr.length);
+				temp =arr[i];
+				arr[i]=arr[a]
+				arr[a]=temp
+			}
+			return arr
+		}
+	</script>
+</html>
