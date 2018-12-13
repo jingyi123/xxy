@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+   		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+	</head>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		.top{
+			width: 100%;
+			padding: 10px 0;
+			text-align: center;
+			background: silver;
+			color: white;
+		}
+		.box{
+			
+		}
+		.d1{
+			width: 40%;
+			
+		}
+		.d1 img{
+			width: 100%;
+		}
+		.d2{
+			width: 60%;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+		}
+		.p1,.p2,.p3{
+			width: 100%;
+			text-align: center;
+			
+		}
+		/*body{
+			background:url(img/timg5.jpg);
+		}*/
+		button{
+			border-radius: 50%;
+			width: 30px;
+			height: 30px;
+			font-size: 20px;
+			border: solid 1px;
+			background: white;
+			line-height: 30px;
+		}
+		.b2{
+			background: yellow;
+		}
+		.div2{
+			width: 100%;
+			width: 100%;
+			display: flex;
+			flex-wrap: wrap;
+			border-bottom: 1px palevioletred solid;
+		}
+		.txt{
+			display: none;
+			width: 12px;
+			text-align: center;
+		}
+		
+		span{
+			padding: 0 10px;
+			
+		}
+		.foort{
+			width: 100%;
+			position: fixed;
+			background: yellow;
+			bottom: 0;
+			height: 60px;
+			display: flex;
+		}
+		.btt{
+			width: 200px;
+			height: 60px;
+			background: greenyellow;
+			color:  crimson;
+			border-radius: 0;
+			border: none;
+			right: 0;
+			position: absolute;
+			right: 0px;
+		}
+	</style>
+	<body>
+		<div class="top">中华小当家</div>
+		<div class="box">
+		</div>
+		<div class="foort">
+			<div class="foo">
+				已选<span style="color: red;">0</span>件商品<br />
+				共计￥<span style="color: red;">0</span><br />
+			</div>
+			<button class="btt">结算</button>
+		</div>
+	</body>
+	<script src="modules/ajax_v3.js" type="text/javascript" charset="utf-8"></script>
+	<script src="modules/jquery-3.3.1.js" type="text/javascript" charset="utf-8"></script>
+	<script src="modules/touch.js"></script>
+	<script type="text/javascript">
+		let ht ="http://localhost:8080"
+		function getMy () {
+			ajax.get(ht+"/init").then(res=>{
+				let data = JSON.parse(res)
+				console.log(data)
+				let str =``
+				let str1 = 0
+				let str2 = 0
+				for (var i = 0; i < data.length; i++) {
+					str +=`<div class = "div2"><div class="d1"><img src="img/${data[i].img}"/></div>
+							<div class="d2">
+							<p class="p1">${data[i].name}</p>
+							<p class="p2">￥${data[i].price}</p>
+							<p class="p3">
+							<button class="b1" onclick="app($(this),'${data[i]._id}')">-</button>
+							<span> ${data[i].num}</span>
+							<input type="text" idd="${data[i]._id}" class="txt" value="${data[i].num}" />
+							<button  class="b2" onclick="add($(this),'${data[i]._id}')">+</button>
+							</p>
+							</div></div>`
+							str1+=data[i].num*1
+							str2+=data[i].num*data[i].price
+				}
+				$(".box").html(str)
+				$(".foo span").eq(0).html(str1)
+				$(".foo span").eq(1).html(str2)
+				uuu()
+				inll()
+				jss ()
+			})
+		}
+		getMy()
+		function uuu () {
+			let sp = $(".box span")
+			//console.log(sp)
+			//console.log(sp[1])
+			for (var i = 0; i < sp.length; i++) {
+				if(sp[i].innerHTML == 0){
+					$(sp[i]).prev().hide();
+					$(sp[i]).hide()
+				}else{
+					$(sp[i]).prev().show();
+					$(sp[i]).show()
+				}
+			}
+		}
+		//加减事件
+		function add (a,id) {
+			a.prop("disabled","disabled")
+			ajax.post(ht+"/jia",{id}).then(res=>{
+				console.log(res)
+				uuu()
+				jss ()
+				a.prop("disabled","")
+				getMy()
+			})
+		}
+		function app (a,id) {
+			a.prop("disabled","disabled")
+			ajax.post(ht+"/jian",{id}).then(res=>{
+				console.log(res)
+				uuu()
+				jss ()
+				a.prop("disabled","")
+				getMy()
+			})
+		}
+		
+		//input
+		function inll () {
+			let sp2 = $(".box span");
+			let inp2 = $("input")
+			console.log(sp2)
+			for (let i = 0; i < sp2.length; i++) {
+				touch.on(sp2[i],"doubletap",function () {
+					console.log(1)
+					$(sp2[i]).hide();
+					$(sp2[i]).next().show()
+				})
+			};
+			//失去焦点
+			for (let i = 0; i < inp2.length; i++) {
+				inp2[i].onblur = function () {
+					$(inp2[i]).hide();
+					$(inp2[i]).prev().show();
+					let id = $(inp2[i]).attr("idd")
+					//console.log(id)
+					ajax.post(ht+"/sj",{num:$(inp2[i]).val(),id:id}).then(res=>{
+						console.log(res)
+						$(inp2[i]).prev().html($(inp2[i]).val())
+						jss ()
+					})
+				}
+			}
+			
+		}
+		//结算
+		function jss () {
+			ajax.get(ht+"/suan").then(res=>{
+				console.log(res)
+				 //res = JSON.parse(res);
+				 $(".btt").html(res)
+			})
+		}
+	</script>
+</html>
