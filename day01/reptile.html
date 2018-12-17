@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body ng-app="app" >
+		<ul ng-controller="ctr1">
+			
+			<li ng-repeat="n in ctr1 track by $index">
+				<a ng-href="{{n.x_abiao}}">{{n.x_atxt}}</a>
+			</li>
+		</ul>
+	</body>
+	<script type="text/javascript">
+		/*var arr1
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET","http://localhost:8080/reptile");
+		xhr.send();
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState==4) {
+				if (xhr.status ==200) {
+					var data = JSON.parse(xhr.responseText)
+					console.log(data)
+					arr1 = data
+				}
+			}
+		}*/
+		
+		var app = angular.module("app",[]);
+		app.controller("ctr1",function ($scope,$http){
+			$http({
+				method:"GET",
+				url:"http://localhost:8080/reptile"
+			}).then(function succ(res) {
+				$scope.ctr1 = res.data[0].list
+				console.log(res.data[0].list)
+			})
+		})
+		
+	</script>
+</html>

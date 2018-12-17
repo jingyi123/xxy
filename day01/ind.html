@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body ng-app ng-init="arr=[]">
+		<input type="text" ng-model="txt1" /><br />
+		<input type="text" ng-model="txt2" /><br />
+		<button ng-click="arr.push({title:txt1,content:txt2})">提交</button>
+		<ul>
+			<li ng-repeat="(a,b) in arr track by $index">
+				<h2>{{b.title}}</h2>
+				<p>{{b.content}}</p>
+				<a href="#" ng-click="arr.splice(a,1)">删除</a>
+			</li>
+		</ul>
+		
+	</body>
+</html>
